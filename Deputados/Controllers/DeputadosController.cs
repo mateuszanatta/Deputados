@@ -40,10 +40,10 @@ namespace Deputados.Controllers
         [HttpGet("~/GetDeputados")]
         public IEnumerable GetDeputados() => _deputadoService.Get();
 
-        [HttpGet("~/GetDeputado")]
+        [HttpGet("~/GetDeputado/{idDeputado}")]
         public Deputado GetDeputado(int idDeputado) => _deputadoService.GetByIdDeputado(idDeputado);
 
-        [HttpGet("~/GetDeputadosStatistics")]
+        [HttpGet("~/GetDeputadosStatistics/{idDeputado}")]
         public DeputadoStatistics GetDeputadosStatistics(int idDeputado) => _deputadoService.GetDeputadoStatistics(idDeputado);
 
         [HttpPost]
