@@ -8,7 +8,7 @@
 ## Instalation
 1. Clone the repo
     ```sh
-    git clone https://github.com/mateuszanatta/Customers-.NET-Core-5.git
+    git clone https://github.com/mateuszanatta/Deputados.git
     ```
 2. Install MongoDB
 3. Install MongoDB.Driver nuget package
