@@ -13,21 +13,21 @@ namespace Congressperson.Controllers
     public class CongresspersonController : ControllerBase
     {
         private readonly IHttpClients _client;
-        private readonly ICongresspersonAPICall _deputadosAPI;
-        private readonly ICongresspersonService _deputadoService;
-        public CongresspersonController(IHttpClients httpClient, ICongresspersonAPICall deputadosAPI, ICongresspersonService deputadosService)
+        private readonly ICongresspersonAPICall _congresspersonAPI;
+        private readonly ICongresspersonService _congresspersonService;
+        public CongresspersonController(IHttpClients httpClient, ICongresspersonAPICall congresspersonAPI, ICongresspersonService congresspersonService)
         {
             _client = httpClient;
-            _deputadosAPI = deputadosAPI;
-            _deputadosAPI.Client = _client;
-            _deputadoService = deputadosService;
+            _congresspersonAPI = congresspersonAPI;
+            _congresspersonAPI.Client = _client;
+            _congresspersonService = congresspersonService;
         }
-        [HttpGet("~/GetDadosFromAPI")]
-        public async Task<ActionResult<DTOCongressperson>> GetDadosFromAPI()
+        [HttpGet("~/GetCongresspersonDataFromAPI")]
+        public async Task<ActionResult<DTOCongressperson>> GetCongresspersonDataFromAPI()
         {
             try
             {
-                return await _deputadosAPI.GetCongresspeopleAsync();
+                return await _congresspersonAPI.GetCongresspeopleAsync();
             }
             catch
             {
@@ -35,22 +35,22 @@ namespace Congressperson.Controllers
             }
         }
 
-        [HttpGet("~/GetDeputados")]
-        public IEnumerable GetDeputados() => _deputadoService.Get();
+        [HttpGet("~/GetCongressperson")]
+        public IEnumerable GetCongressperson() => _congresspersonService.Get();
 
-        [HttpGet("~/GetDeputado/{idDeputado}")]
-        public Models.Congressperson GetDeputado(int idDeputado) => _deputadoService.GetByIdDeputado(idDeputado);
+        [HttpGet("~/GetCongressperson/{idCongressperson}")]
+        public Models.Congressperson GetCongressperson(int idCongressperson) => _congresspersonService.GetByIdCongressperson(idCongressperson);
 
-        [HttpGet("~/GetDeputadosStatistics/{idDeputado}")]
-        public CongresspersonStatistics GetDeputadosStatistics(int idDeputado) => _deputadoService.GetDeputadoStatistics(idDeputado);
+        [HttpGet("~/GetCongresspersonStatistics/{idCongressperson}")]
+        public CongresspersonStatistics GetCongresspersonStatistics(int idCongressperson) => _congresspersonService.GetCongresspersonStatistics(idCongressperson);
 
         [HttpPost]
-        public async Task<ActionResult> InsertDeputadosFromAPIToDatabase()
+        public async Task<ActionResult> InsertCongresspersonFromAPIToDatabase()
         {
             try
             {
-                var dados = await _deputadosAPI.GetCongresspeopleAsync();
-                _deputadoService.InsertMany(dados.Congressperson);
+                var dados = await _congresspersonAPI.GetCongresspeopleAsync();
+                _congresspersonService.InsertMany(dados.Congressperson);
                 return StatusCode(201, "Internal server error");
             }
             catch

@@ -13,22 +13,22 @@ using Congressperson.Models.DTO;
 using System.Net.Http;
 using System.Net;
 
-namespace DeputadosTest
+namespace CongresspersonTest
 {
-    public class DeputadosAPICallTest
+    public class CongresspersonAPICallTest
     {
-        ICongresspersonAPICall _deputadosCall;
+        ICongresspersonAPICall _congresspersonCall;
 
         [OneTimeSetUp]
         public void Setup()
         {
             IHttpClients _httpClient = A.Fake<IHttpClients>();
-            _deputadosCall = new CongresspersonAPICall();
-            _deputadosCall.Client = _httpClient;
+            _congresspersonCall = new CongresspersonAPICall();
+            _congresspersonCall.Client = _httpClient;
         }
 
         [Test]
-        public async Task GetDeputados_ShouldReturn_ListOfDeputadosAsync()
+        public async Task GetCongresspeople_ShouldReturn_ListOfCongresspeopleAsync()
         {
             var dados = CreateDados();
             var expenses = CreateExpenses();
@@ -36,21 +36,21 @@ namespace DeputadosTest
             Stream dataStream = await CreateJsonStream(dados);
             var responseMessage = await CreateHttpResponseMessageStream(expenses);
 
-            A.CallTo(() => _deputadosCall.Client.Clear());
-            A.CallTo(() => _deputadosCall.Client.Add(A<string>.Ignored));
-            A.CallTo(() => _deputadosCall.Client.GetStreamAsync(A<string>.Ignored))
+            A.CallTo(() => _congresspersonCall.Client.Clear());
+            A.CallTo(() => _congresspersonCall.Client.Add(A<string>.Ignored));
+            A.CallTo(() => _congresspersonCall.Client.GetStreamAsync(A<string>.Ignored))
                 .Returns(dataStream).Once();
-            A.CallTo(() => _deputadosCall.Client.GetAsync(A<string>.Ignored))
+            A.CallTo(() => _congresspersonCall.Client.GetAsync(A<string>.Ignored))
                 .Returns(responseMessage).Once();
 
-            var _deputadosReturn = await _deputadosCall.GetCongresspeopleAsync();
+            var _congresspeopleReturn = await _congresspersonCall.GetCongresspeopleAsync();
 
-            Assert.AreEqual(dados.Congressperson.ToList()[0].IdCongressperson, _deputadosReturn.Congressperson.ToList()[0].IdCongressperson);
-            Assert.AreEqual(dados.Congressperson.ToList()[0].Expenses.ToList()[0].Year, _deputadosReturn.Congressperson.ToList()[0].Expenses.ToList()[0].Year);
-            A.CallTo(() => _deputadosCall.Client.Clear()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _deputadosCall.Client.Add(A<string>.Ignored)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _deputadosCall.Client.GetStreamAsync(A<string>.Ignored)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _deputadosCall.Client.GetAsync(A<string>.Ignored)).MustHaveHappenedOnceExactly();
+            Assert.AreEqual(dados.Congressperson.ToList()[0].IdCongressperson, _congresspeopleReturn.Congressperson.ToList()[0].IdCongressperson);
+            Assert.AreEqual(dados.Congressperson.ToList()[0].Expenses.ToList()[0].Year, _congresspeopleReturn.Congressperson.ToList()[0].Expenses.ToList()[0].Year);
+            A.CallTo(() => _congresspersonCall.Client.Clear()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _congresspersonCall.Client.Add(A<string>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _congresspersonCall.Client.GetStreamAsync(A<string>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _congresspersonCall.Client.GetAsync(A<string>.Ignored)).MustHaveHappenedOnceExactly();
         }
 
         private DTOCongressperson CreateDados()

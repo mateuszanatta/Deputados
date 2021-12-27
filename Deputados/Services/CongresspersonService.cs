@@ -11,38 +11,38 @@ namespace Congressperson.Services
 {
     public class CongresspersonService : ICongresspersonService
     {
-        private readonly IMongoCollection<Models.Congressperson> _deputados;
+        private readonly IMongoCollection<Models.Congressperson> _congresspeople;
 
         public CongresspersonService(ICongresspersonDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            _deputados = database.GetCollection<Models.Congressperson>(settings.CongresspersonCollectionName);
+            _congresspeople = database.GetCollection<Models.Congressperson>(settings.CongresspersonCollectionName);
         }
 
         public IEnumerable<Models.Congressperson> Get() => 
-            _deputados.Find(deputado => true).ToEnumerable<Models.Congressperson>();
+            _congresspeople.Find(congressperson => true).ToEnumerable<Models.Congressperson>();
 
         public Models.Congressperson Get(string id) =>
-            _deputados.Find<Models.Congressperson>(deputado => deputado.IdDatabase == id).FirstOrDefault();
+            _congresspeople.Find<Models.Congressperson>(congressperson => congressperson.IdDatabase == id).FirstOrDefault();
 
-        public Models.Congressperson GetByIdDeputado(int idDeputado) =>
-            _deputados.Find<Models.Congressperson>(deputado => deputado.IdCongressperson == idDeputado).FirstOrDefault();
+        public Models.Congressperson GetByIdCongressperson(int idCongressperson) =>
+            _congresspeople.Find<Models.Congressperson>(congressperson => congressperson.IdCongressperson == idCongressperson).FirstOrDefault();
 
-        public CongresspersonStatistics GetDeputadoStatistics(int idDeputado)
+        public CongresspersonStatistics GetCongresspersonStatistics(int idCongressperson)
         {
-            Models.Congressperson deputado = GetByIdDeputado(idDeputado);
+            Models.Congressperson congressperson = GetByIdCongressperson(idCongressperson);
 
-            var expensensByMonth = ComputeDeputadoExpensesByMonth(deputado);
+            var expensensByMonth = ComputeCongresspersonExpensesByMonth(congressperson);
 
-            var expensensByYear = ComputeDeputadoExpensesByYear(expensensByMonth);
+            var expensensByYear = ComputeCongresspersonExpensesByYear(expensensByMonth);
 
             return new CongresspersonStatistics { ExpensesByYear = expensensByYear, ExpensesByMonth = expensensByMonth };
         }
 
-        private static IEnumerable<ExpensensByMonth> ComputeDeputadoExpensesByMonth(Models.Congressperson deputado) =>
-            deputado.Expenses.GroupBy(expense => new { expense.Year, expense.Month })
+        private static IEnumerable<ExpensensByMonth> ComputeCongresspersonExpensesByMonth(Models.Congressperson congressperson) =>
+            congressperson.Expenses.GroupBy(expense => new { expense.Year, expense.Month })
                                                     .Select(_ => new ExpensensByMonth
                                                     {
                                                         Year = _.First().Year,
@@ -50,7 +50,7 @@ namespace Congressperson.Services
                                                         Value = _.Sum(s => s.GrossAmount + s.NonRefundableAmount)
                                                     }).OrderBy(expense => expense.Year).ThenBy(expense => expense.Month );
 
-        private static IEnumerable<ExpensensByYear> ComputeDeputadoExpensesByYear(IEnumerable<ExpensensByMonth> expensensByMonth) =>
+        private static IEnumerable<ExpensensByYear> ComputeCongresspersonExpensesByYear(IEnumerable<ExpensensByMonth> expensensByMonth) =>
             expensensByMonth.GroupBy(expense => expense.Year)
                                                     .Select(_ => new ExpensensByYear
                                                     {
@@ -58,36 +58,36 @@ namespace Congressperson.Services
                                                         Value = _.Sum(s => s.Value)
                                                     }).OrderBy(expense => expense.Year);
 
-        public void Insert(Models.Congressperson deputado)
+        public void Insert(Models.Congressperson congressperson)
         {
-            if (GetByIdDeputado(deputado.IdCongressperson) == null)
-                _deputados.InsertOne(deputado);
+            if (GetByIdCongressperson(congressperson.IdCongressperson) == null)
+                _congresspeople.InsertOne(congressperson);
         }
 
-        public void InsertMany(IEnumerable<Models.Congressperson> deputados)
+        public void InsertMany(IEnumerable<Models.Congressperson> congresspeople)
         {
-            var deputadosInDb = Get();
-            var deputadosNotInDb = deputados.Except(deputadosInDb, new IdDeputadosComparer());
-            _deputados.InsertMany(deputadosNotInDb);
+            var congresspeopleInDb = Get();
+            var congresspeopleNotInDb = congresspeople.Except(congresspeopleInDb, new IdCongresspeopleComparer());
+            _congresspeople.InsertMany(congresspeopleNotInDb);
         }
 
-        public void Update(Models.Congressperson deputado)
+        public void Update(Models.Congressperson congressperson)
         {
-            _deputados.ReplaceOne(_ => _.IdDatabase == deputado.IdDatabase, deputado);
+            _congresspeople.ReplaceOne(_ => _.IdDatabase == congressperson.IdDatabase, congressperson);
         }
 
-        public void Remove(Models.Congressperson deputado)
+        public void Remove(Models.Congressperson congressperson)
         {
-            _deputados.DeleteOne(_ => _.IdDatabase == deputado.IdDatabase);
+            _congresspeople.DeleteOne(_ => _.IdDatabase == congressperson.IdDatabase);
         }
 
         public void Remove(string id)
         {
-            _deputados.DeleteOne(deputado => deputado.IdDatabase == id);
+            _congresspeople.DeleteOne(congressperson => congressperson.IdDatabase == id);
         }
     }
 
-    public class IdDeputadosComparer : IEqualityComparer<Models.Congressperson>
+    public class IdCongresspeopleComparer : IEqualityComparer<Models.Congressperson>
     {
         public bool Equals(Models.Congressperson x, Models.Congressperson y)
         {
@@ -99,13 +99,13 @@ namespace Congressperson.Services
             return x.IdCongressperson == y.IdCongressperson;
         }
 
-        public int GetHashCode([DisallowNull] Models.Congressperson deputado)
+        public int GetHashCode([DisallowNull] Models.Congressperson congressperson)
         {
-            if (deputado is null) return 0;
+            if (congressperson is null) return 0;
 
-            int hashIdDeputado = deputado.IdCongressperson.GetHashCode();
+            int hashIdCongressperson = congressperson.IdCongressperson.GetHashCode();
 
-            return hashIdDeputado;
+            return hashIdCongressperson;
         }
     }
 }
