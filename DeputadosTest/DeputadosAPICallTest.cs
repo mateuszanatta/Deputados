@@ -10,18 +10,19 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
 using Deputados.Models.DTO;
+using System.Net.Http;
+using System.Net;
 
 namespace DeputadosTest
 {
     public class DeputadosAPICallTest
     {
         IDeputadosAPICall _deputadosCall;
-        IHttpClients _httpClient;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            _httpClient = A.Fake<IHttpClients>();
+            IHttpClients _httpClient = A.Fake<IHttpClients>();
             _deputadosCall = new DeputadosAPICall();
             _deputadosCall.Client = _httpClient;
         }
@@ -29,29 +30,27 @@ namespace DeputadosTest
         [Test]
         public async Task GetDeputados_ShouldReturn_ListOfDeputadosAsync()
         {
-            var mediaType = "application/json";
-            var baseURL = "https://dadosabertos.camara.leg.br/api/v2/deputados";
             var dados = CreateDados();
             var expenses = CreateExpenses();
-            string expensesUrl = baseURL + $"/{dados.Deputados.ToList()[0].IdDeputado}/despesas";
 
-            Task<Stream> streamDados = CreateJsonStream(dados);
-            Task<Stream> streamExpenses = CreateJsonStream(expenses);
+            Stream dataStream = await CreateJsonStream(dados);
+            var responseMessage = await CreateHttpResponseMessageStream(expenses);
 
-            A.CallTo(() => _httpClient.Clear());
-            A.CallTo(() => _httpClient.Add(A.Dummy<string>()));
-            A.CallTo(() => _httpClient.GetStreamAsync(baseURL)).Returns(streamDados).Once();
-            A.CallTo(() => _httpClient.GetStreamAsync(expensesUrl)).Returns(streamExpenses).Once();
+            A.CallTo(() => _deputadosCall.Client.Clear());
+            A.CallTo(() => _deputadosCall.Client.Add(A<string>.Ignored));
+            A.CallTo(() => _deputadosCall.Client.GetStreamAsync(A<string>.Ignored))
+                .Returns(dataStream).Once();
+            A.CallTo(() => _deputadosCall.Client.GetAsync(A<string>.Ignored))
+                .Returns(responseMessage).Once();
 
             var _deputadosReturn = await _deputadosCall.GetDadosAsync();
 
             Assert.AreEqual(dados.Deputados.ToList()[0].IdDeputado, _deputadosReturn.Deputados.ToList()[0].IdDeputado);
             Assert.AreEqual(dados.Deputados.ToList()[0].Expenses.ToList()[0].Ano, _deputadosReturn.Deputados.ToList()[0].Expenses.ToList()[0].Ano);
-            A.CallTo(() => _httpClient.Clear()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _httpClient.Add(mediaType)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _httpClient.GetStreamAsync(baseURL)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => _httpClient.GetStreamAsync(expensesUrl)).MustHaveHappenedOnceExactly();
-
+            A.CallTo(() => _deputadosCall.Client.Clear()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _deputadosCall.Client.Add(A<string>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _deputadosCall.Client.GetStreamAsync(A<string>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _deputadosCall.Client.GetAsync(A<string>.Ignored)).MustHaveHappenedOnceExactly();
         }
 
         private Dados CreateDados()
@@ -64,7 +63,7 @@ namespace DeputadosTest
                     {
                         IdDeputado = 204554,
                         URI = "https://dadosabertos.camara.leg.br/api/v2/deputados/204554",
-                        Nome = "Abílio Santana",
+                        Nome = "Abï¿½lio Santana",
                         SiglaPartido = "PL",
                         URIPartido = "https://dadosabertos.camara.leg.br/api/v2/partidos/37906",
                         UF = "BA",
@@ -75,7 +74,7 @@ namespace DeputadosTest
                         {
                             new Expenses
                             {
-                                Ano = 0,
+                                Ano = 2021,
                                 Mes = 0,
                                 TipoDespesa = "",
                                 TipoDocumento = "",
@@ -103,7 +102,7 @@ namespace DeputadosTest
             {
                 new Expenses
                 {
-                    Ano = 0,
+                    Ano = 2021,
                     Mes = 0,
                     TipoDespesa = "",
                     TipoDocumento = "",
@@ -122,13 +121,20 @@ namespace DeputadosTest
             }
         };
 
-
-        private static async Task<Stream> CreateJsonStream<T>(T dados)
+        private static async Task<Stream> CreateJsonStream<T>(T data)
         {
-            Stream streamDados = new MemoryStream();
-            await JsonSerializer.SerializeAsync(streamDados, dados, typeof(T));
-            streamDados.Position = 0;
-            return streamDados;
+            Stream dataStream = new MemoryStream();
+            await JsonSerializer.SerializeAsync(dataStream, data, typeof(T));
+            dataStream.Position = 0;
+            return dataStream;
+        }
+
+        private async Task<HttpResponseMessage> CreateHttpResponseMessageStream<T>(T data)
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StreamContent(await CreateJsonStream(data))
+            };
         }
     }
 }

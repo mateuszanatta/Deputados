@@ -1,6 +1,8 @@
 ﻿using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
+#nullable enable
 namespace Deputados.HttpClients.Interfaces
 {
     public interface IHttpClients
@@ -8,5 +10,7 @@ namespace Deputados.HttpClients.Interfaces
         void Clear();
         void Add(string mediaType);
         Task<Stream> GetStreamAsync(string requestUri);
+
+        Task<HttpResponseMessage> GetAsync(string? requestUri);
     }
 }

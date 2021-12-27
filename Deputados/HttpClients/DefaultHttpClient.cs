@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Deputados.HttpClients.Interfaces;
 
+#nullable enable
 namespace Deputados.HttpClients
 {
     public class DefaultHttpClient : IHttpClients
@@ -24,6 +25,11 @@ namespace Deputados.HttpClients
         public Task<Stream> GetStreamAsync(string requestUri)
         {
             return client.GetStreamAsync(requestUri);
+        }
+
+        public Task<HttpResponseMessage> GetAsync(string? requestUri)
+        {
+            return client.GetAsync(requestUri);
         }
     }
 }
