@@ -1,9 +1,8 @@
-﻿using Deputados.Controllers.Interfaces;
+﻿using Congressperson.Controllers.Interfaces;
 using System.Threading.Tasks;
 using System.Text.Json;
-using Deputados.Models;
-using Deputados.HttpClients.Interfaces;
-using Deputados.Models.DTO;
+using Congressperson.HttpClients.Interfaces;
+using Congressperson.Models.DTO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
@@ -12,36 +11,36 @@ using System.Net;
 using System.Threading;
 using System;
 
-namespace Deputados.Controllers
+namespace Congressperson.Controllers
 {
-    public class DeputadosAPICall : IDeputadosAPICall
+    public class CongresspersonAPICall : ICongresspersonAPICall
     {
         public IHttpClients Client { get; set; }
 
         const string BaseUrl = "https://dadosabertos.camara.leg.br/api/v2/deputados";
         const int InitialYear = 2003; //Year data started becoming public
-        public async Task<Dados> GetDadosAsync()
+        public async Task<DTOCongressperson> GetCongresspeopleAsync()
         {
-            return await ProcessDeputados();
+            return await ProcessCongresspeople();
         }
 
-        private async Task<Dados> ProcessDeputados()
+        private async Task<DTOCongressperson> ProcessCongresspeople()
         {
             Client.Clear();
             Client.Add(mediaType: "application/json");
-            Dados dados = await JsonSerializer.DeserializeAsync<Dados>(await Client.GetStreamAsync(BaseUrl));
-            await ExpensesDeputados(dados);
-            return dados;
+            DTOCongressperson congresspersonData = await JsonSerializer.DeserializeAsync<DTOCongressperson>(await Client.GetStreamAsync(BaseUrl));
+            await ExpensesCongressperson(congresspersonData);
+            return congresspersonData;
         }
 
-        private async Task ExpensesDeputados(Dados dados)
+        private async Task ExpensesCongressperson(DTOCongressperson congresspersonData)
         {
-            foreach (var deputado in dados.Deputados)
+            foreach (var congressperson in congresspersonData.Congressperson)
             {
                 DTOExpenses expenses = new();
                 List<Expenses> expensesList = new List<Expenses>();
                 string years = GenerateYearArrayParameter();
-                string expensesUrl = BaseUrl + $"/{deputado.IdDeputado}/despesas?{years}";
+                string expensesUrl = BaseUrl + $"/{congressperson.IdCongressperson}/despesas?{years}";
                 HttpResponseMessage response;
                 do
                 {
@@ -59,7 +58,7 @@ namespace Deputados.Controllers
                     }
                 } while (expenses.Links.Any(_ => _.Rel == "next"));
 
-                deputado.Expenses = expensesList;
+                congressperson.Expenses = expensesList;
             }
         }
 

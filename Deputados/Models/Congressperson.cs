@@ -1,40 +1,40 @@
-﻿using Deputados.Models.DTO;
+﻿using Congressperson.Models.DTO;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Deputados.Models
+namespace Congressperson.Models
 {
-    public class Deputado
+    public class Congressperson
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdDatabase { get; set; }
 
         [JsonPropertyName("id")]
-        public int IdDeputado { get; set; }
+        public int IdCongressperson { get; set; }
 
         [JsonPropertyName("uri")]
         public string URI { get; set; }
 
         [JsonPropertyName("nome")]
-        public string Nome { get; set; }
+        public string Name { get; set; }
 
         [JsonPropertyName("siglaPartido")]
-        public string SiglaPartido { get; set; }
+        public string PartyAcronym { get; set; }
 
         [JsonPropertyName("uriPartido")]
-        public string URIPartido { get; set; }
+        public string URIParty { get; set; }
 
         [JsonPropertyName("siglaUf")]
-        public string UF { get; set; }
+        public string State { get; set; }
 
         [JsonPropertyName("idLegislatura")]
-        public int IdLegislatura { get; set; }
+        public int IdLegislature { get; set; }
 
         [JsonPropertyName("urlFoto")]
-        public string URLFoto { get; set; }
+        public string PictureURL { get; set; }
 
         [JsonPropertyName("email")]
         public string Email { get; set; }

@@ -1,30 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Deputados.Models.DTO
+namespace Congressperson.Models.DTO
 {
     public class Expenses
     {
         [JsonPropertyName("ano")]
-        public int Ano { get; set; }
+        public int Year { get; set; }
 
         [JsonPropertyName("mes")]
-        public int Mes { get; set; }
+        public int Month { get; set; }
 
         [JsonPropertyName("tipoDespesa")]
-        public string TipoDespesa { get; set; }
+        public string ExpenseType { get; set; }
 
         [JsonPropertyName("tipoDocumento")]
-        public string TipoDocumento { get; set; }
+        public string TypeDocument { get; set; }
 
         [JsonPropertyName("valorDocumento")]
-        public decimal ValorDocumento { get; set; }
+        public decimal GrossAmount { get; set; }
         
         [JsonPropertyName("valorLiquido")]
-        public decimal valorLiquido { get; set; }
+        public decimal NetAmount { get; set; }
 
         [JsonPropertyName("valorGlosa")]
-        public decimal ValorGlosa { get; set; }
+        public decimal NonRefundableAmount { get; set; }
     }
 
     public class DTOExpenses

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Deputados.Models
+namespace Congressperson.Models
 {
     public class Links
     {

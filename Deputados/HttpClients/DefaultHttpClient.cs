@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Deputados.HttpClients.Interfaces;
+using Congressperson.HttpClients.Interfaces;
 
 #nullable enable
-namespace Deputados.HttpClients
+namespace Congressperson.HttpClients
 {
     public class DefaultHttpClient : IHttpClients
     {

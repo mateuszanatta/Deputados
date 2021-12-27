@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 #nullable enable
-namespace Deputados.HttpClients.Interfaces
+namespace Congressperson.HttpClients.Interfaces
 {
     public interface IHttpClients
     {

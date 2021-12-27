@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Deputados.Models.DTO
+namespace Congressperson.Models.DTO
 {
-    public class DeputadoStatistics
+    public class CongresspersonStatistics
     {
         public IEnumerable<ExpensensByYear> ExpensesByYear { get; set; }
         public IEnumerable<ExpensensByMonth> ExpensesByMonth { get; set; }

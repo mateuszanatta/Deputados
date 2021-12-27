@@ -1,26 +1,19 @@
-using Deputados.Controllers;
-using Deputados.Controllers.Interfaces;
-using Deputados.HttpClients;
-using Deputados.HttpClients.Interfaces;
-using Deputados.Models;
-using Deputados.Services;
-using Deputados.Services.Interfaces;
+using Congressperson.Controllers;
+using Congressperson.Controllers.Interfaces;
+using Congressperson.HttpClients;
+using Congressperson.HttpClients.Interfaces;
+using Congressperson.Models;
+using Congressperson.Services;
+using Congressperson.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Deputados
+namespace Congressperson
 {
     public class Startup
     {
@@ -35,12 +28,12 @@ namespace Deputados
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.Configure<DeputadosDatabaseSettings>(
-                Configuration.GetSection(nameof(DeputadosDatabaseSettings)));
-            services.AddSingleton<IDeputadosDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<DeputadosDatabaseSettings>>().Value);
+            services.Configure<CongresspersonDatabaseSettings>(
+                Configuration.GetSection(nameof(CongresspersonDatabaseSettings)));
+            services.AddSingleton<ICongresspersonDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<CongresspersonDatabaseSettings>>().Value);
 
-            services.AddSingleton<IDeputadosService, DeputadosService>();
+            services.AddSingleton<ICongresspersonService, CongresspersonService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -48,7 +41,7 @@ namespace Deputados
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Deputados", Version = "v1" });
             });
             services.AddScoped<IHttpClients, DefaultHttpClient>();
-            services.AddScoped<IDeputadosAPICall, DeputadosAPICall>();
+            services.AddScoped<ICongresspersonAPICall, CongresspersonAPICall>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
