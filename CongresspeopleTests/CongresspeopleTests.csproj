@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Deputados\Deputados.csproj" />
+    <ProjectReference Include="..\Congresspeople\Congresspeople.csproj" />
   </ItemGroup>
 
 </Project>
