@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Deputados/bin/Debug/net6.0/Deputados.dll",
+            "program": "${workspaceFolder}/Congresspeople/bin/Debug/net6.0/Congresspeople.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Deputados",
+            "cwd": "${workspaceFolder}/Congresspeople",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
