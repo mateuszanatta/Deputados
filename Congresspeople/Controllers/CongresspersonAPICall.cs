@@ -26,14 +26,17 @@ namespace Congressperson.Controllers
 
         private async Task<DTOCongressperson> ProcessCongresspeople()
         {
-            Client.Clear();
-            Client.Add(mediaType: "application/json");
-            DTOCongressperson congresspersonData = await JsonSerializer.DeserializeAsync<DTOCongressperson>(await Client.GetStreamAsync(BaseUrl));
-            await ExpensesCongressperson(congresspersonData);
-            return congresspersonData;
+            using (var client = Client)
+            {
+                client.Clear();
+                client.Add(mediaType: "application/json");
+                DTOCongressperson congresspersonData = await JsonSerializer.DeserializeAsync<DTOCongressperson>(await client.GetStreamAsync(BaseUrl));
+                await ExpensesCongressperson(client, congresspersonData);
+                return congresspersonData;
+            }
         }
 
-        private async Task ExpensesCongressperson(DTOCongressperson congresspersonData)
+        private async Task ExpensesCongressperson(IHttpClients client, DTOCongressperson congresspersonData)
         {
             foreach (var congressperson in congresspersonData.Congressperson)
             {
@@ -44,14 +47,14 @@ namespace Congressperson.Controllers
                 HttpResponseMessage response;
                 do
                 {
-                    response = await Client.GetAsync(expensesUrl);
+                    response = await client.GetAsync(expensesUrl);
                     if(response.IsSuccessStatusCode)
                     {
                         expenses = await JsonSerializer.DeserializeAsync<DTOExpenses>(await response.Content.ReadAsStreamAsync());
                         expensesList.AddRange(expenses.Expenses);
                         expensesUrl = expenses.Links.FirstOrDefault(link => link.Rel == "next")?.Href;
                     }
-                    else if(response.StatusCode == HttpStatusCode.TooManyRequests)
+                    else if(HasTooManyRequests(response))
                     {
                         Thread.Sleep(response.Headers.RetryAfter.Delta ?? new TimeSpan(5000));
                         expensesUrl = expenses.Links.FirstOrDefault(link => link.Rel == "self")?.Href;
@@ -72,5 +75,8 @@ namespace Congressperson.Controllers
             }
             return yearArrayParameter.ToString();
         }
+
+        private bool HasTooManyRequests(HttpResponseMessage response) => response.StatusCode == HttpStatusCode.TooManyRequests;
+        
     }
 }

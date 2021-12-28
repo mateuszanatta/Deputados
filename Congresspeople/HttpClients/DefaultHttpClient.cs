@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using Congressperson.HttpClients.Interfaces;
 #nullable enable
 namespace Congressperson.HttpClients
 {
-    public class DefaultHttpClient : IHttpClients
+    public sealed class DefaultHttpClient : IHttpClients
     {
         private static readonly HttpClient client = new();
 
@@ -31,5 +32,7 @@ namespace Congressperson.HttpClients
         {
             return client.GetAsync(requestUri);
         }
+
+        public void Dispose() => client.Dispose();
     }
 }
