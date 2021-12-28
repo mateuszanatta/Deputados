@@ -12,14 +12,12 @@ namespace Congressperson.Controllers
     [Route("[controller]")]
     public class CongresspersonController : ControllerBase
     {
-        private readonly IHttpClients _client;
         private readonly ICongresspersonAPICall _congresspersonAPI;
         private readonly ICongresspersonService _congresspersonService;
         public CongresspersonController(IHttpClients httpClient, ICongresspersonAPICall congresspersonAPI, ICongresspersonService congresspersonService)
         {
-            _client = httpClient;
             _congresspersonAPI = congresspersonAPI;
-            _congresspersonAPI.Client = _client;
+            _congresspersonAPI.Client = httpClient;
             _congresspersonService = congresspersonService;
         }
         [HttpGet("~/GetCongresspersonDataFromAPI")]
