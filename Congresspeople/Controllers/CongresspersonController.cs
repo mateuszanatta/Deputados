@@ -1,4 +1,5 @@
-﻿using Congressperson.Controllers.Interfaces;
+﻿using System;
+using Congressperson.Controllers.Interfaces;
 using Congressperson.HttpClients.Interfaces;
 using Congressperson.Models.DTO;
 using Congressperson.Services.Interfaces;
@@ -27,9 +28,9 @@ namespace Congressperson.Controllers
             {
                 return await _congresspersonAPI.GetCongresspeopleAsync();
             }
-            catch
+            catch(Exception ex)
             {
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, ex);
             }
         }
 
